@@ -3,19 +3,25 @@ import M from "materialize-css";
 import './App.css';
 import ProductCard from './components/ProductCard/ProductCard';
 import Selector from './components/Selector/Selector';
+import Paginator from './components/Paginator/Paginator';
 
 import ProductService from './services/ProductService';
 
 function App() {
+  const [productList, setProductList] = useState( [] );
   const [products, setProducts] = useState( [] );
   const [sortEnabled, setSortEnabled] = useState( false );
   const [seachText, setSeachText] = useState( "" );
   const [conditions, setConditions] = useState( [{"value":"new", "label":"new"}] );
+  const [pages, setPages] = useState( 0 );
+  const [currentPage, setCurrentPage] = useState(1)
   
   const priceLevels = [
     {value: "menor", label: "Menor precio"},
     {value: "mayor", label: "Mayor precio"}
   ];
+
+  const PAGE_SIZE = 30;
 
   useEffect( () => {
     M.AutoInit();
@@ -23,11 +29,16 @@ function App() {
 
   async function handleChangeSearch({target}) {
       const response = await ProductService.search(seachText);
-      setProducts(response);
       setSeachText("");
       if(response.length > 0) {
+        setProducts(response);
+        const prods = await ProductService.paginate(response, currentPage, PAGE_SIZE);
+        setProductList(prods);
         setSortEnabled(true);
+        setPages( Math.ceil(response.length / PAGE_SIZE ) );
+        setCurrentPage(1);
         M.AutoInit();
+      
       }
   }
 
@@ -37,6 +48,13 @@ function App() {
 
   async function handleSelectedPriceLevel(selected) {
     console.log("price:", selected);
+  }
+
+  async function handlePageChange({target}) {
+    const newPage = parseInt(target.innerHTML);
+    const prods = await ProductService.paginate(products, newPage, PAGE_SIZE);
+    setCurrentPage(newPage);
+    setProductList(prods);
   }
 
   return (
@@ -52,15 +70,10 @@ function App() {
           </form>
         </div>
       </nav>
-      <nav>
-        <div class="nav-wrapper">
-          <a href="#" class="brand-logo">Catálogo</a>
-          <ul id="nav-mobile" class="right hide-on-med-and-down">
-            
-          </ul>
-        </div>
-      </nav>
       <div class="row">
+        <div class="col s4">
+          <h5>Catálogo</h5>
+        </div>
         <Selector
           disabled={!sortEnabled}
           options={priceLevels}
@@ -76,9 +89,16 @@ function App() {
          />
       </div>
 
+      <Paginator 
+        pages={pages}
+        onPageChange={handlePageChange}
+        currentPage={currentPage}
+        total={products.length}
+      />
+
       <div class="row">
-        { products.length &&
-          products.map((prod) => {
+        { productList.length &&
+          productList.map((prod) => {
             return (
               <ProductCard
                 id={prod.id}
