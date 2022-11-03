@@ -104,7 +104,7 @@ function App() {
       />
 
       <div class="row">
-        { productList.length &&
+        { productList.length && 
           productList.map((prod) => {
             return (
               <ProductCard
@@ -118,6 +118,13 @@ function App() {
               />
             )
           })
+        }
+        {
+          !productList.length && (
+            <blockquote>
+              Busque un producto para ver el resultado aquí.
+            </blockquote>
+          )
         }
       </div>
     </>

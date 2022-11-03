@@ -1,5 +1,5 @@
 import React from 'react';
-
+import MoneyNumber from '../MoneyNumber/MoneyNumber';
 
 function ProductCard({id, title, thumbnail, price, currency, stock, condition}) {
     return (
@@ -15,7 +15,7 @@ function ProductCard({id, title, thumbnail, price, currency, stock, condition}) 
                 <div class="card-action">
                     
                     <div class="row">
-                        <div class="col s6"><b>{currency}</b>&nbsp;{price}</div>
+                        <div class="col s6"><b>{currency}</b>&nbsp;{<MoneyNumber amount={price} />}</div>
                         <div class="col s6 pull-right">Quedan: {stock}</div>
                     </div>
                 </div>
