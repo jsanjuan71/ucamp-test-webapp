@@ -6,7 +6,7 @@ function ProductCard({id, title, thumbnail, price, currency, stock, condition}) 
         <div class="col s3 m3">
             <div class="card">
                 <div class="card-image">
-                    <img class="thumbnail" src={thumbnail} alt={id}/>
+                    <img class="thumbnail" height="auto" src={thumbnail} alt={id}/>
                 </div>
                 <div class="card-content">
                     <span class="card-title">{title} &nbsp;<sup>{condition}</sup></span>

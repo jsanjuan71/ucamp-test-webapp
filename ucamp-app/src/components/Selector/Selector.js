@@ -13,6 +13,7 @@ function Selector({options, title, disabled, onSelect}) {
             disabled={disabled}
             onChange={({target})=>onSelect(target.value)}
           >
+            <option selected disabled={true} value={-1}>Seleccione</option>
             {
                 options.length &&
                 options.map( (option) => {
