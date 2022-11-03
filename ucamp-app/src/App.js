@@ -12,7 +12,7 @@ function App() {
   const [products, setProducts] = useState( [] );
   const [sortEnabled, setSortEnabled] = useState( false );
   const [seachText, setSeachText] = useState( "" );
-  const [conditions, setConditions] = useState( [{"value":"new", "label":"new"}] );
+  const [conditions, setConditions] = useState( [] );
   const [pages, setPages] = useState( 0 );
   const [currentPage, setCurrentPage] = useState(1)
   
@@ -32,6 +32,8 @@ function App() {
       setSeachText("");
       if(response.length > 0) {
         setProducts(response);
+        const conds = await ProductService.listAllConditions(response);
+        setConditions(conds);
         const prods = await ProductService.paginate(response, currentPage, PAGE_SIZE);
         setProductList(prods);
         setSortEnabled(true);
@@ -43,11 +45,16 @@ function App() {
   }
 
   async function handleSelectedCondition(selected) {
-    console.log("condition:", selected);
+    const prods = await ProductService.sortByCondition(products, selected);
+    setCurrentPage(1);
+    setProductList(prods);
   }
 
   async function handleSelectedPriceLevel(selected) {
-    console.log("price:", selected);
+    setProductList([]);
+    const prods = await ProductService.sortByPrice(products, selected==="mayor");
+    setCurrentPage(1);
+    setProductList(prods);
   }
 
   async function handlePageChange({target}) {
